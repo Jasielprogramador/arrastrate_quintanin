@@ -1,0 +1,65 @@
+a)
+aritmetika.c eta azala.c fitxategien hasieran hurrenez hurren #include "aritmetika.h" eta #include "azala.h"
+
+b)
+vim azterketa.c->Hemen gure main programa sartuko dugu
+#include<stdio.h>
+#include "azala.h"
+#include "aritmetika.h"
+int main(){
+int a;
+int b;
+printf("Sartu zenbaki oso bat: ");
+scanf("%d",&a);
+printf("Sartu beste zenbaki oso bat: ");
+scanf("%d",&b);
+printf("\n Batuketa: %d",batuketa(a,b));
+printf("\n Laukizuzena: %d\n",laukizuzen(a,b));
+}
+
+Honekin batera aritmetika.c fitxategian "biderkaketa" jarri beharrean "biderketa" jarriko dugu
+
+Azkenik moduluak sartuko ditugu:
+mkdir include
+mv aritmetika.h include
+mv azala.h include
+mv konstante.h include
+gcc -o azterketa azterketa.c azala.c aritmetika.c -I ./include
+
+d)
+gcc -o aritmetika.c -I ./include
+gcc -o azala.c -I ./include
+gcc -o azterketa azterketa.c azala.c aritmetika.c -I ./include
+
+e)
+gcc -I ./include/ -c aritmetika.c -o aritmetika.o -fPIC
+gcc -I ./include/ -c azala.c -o azala.o -fPIC
+ld -o liborokor.so aritmetika.o azala.o -shared
+gcc -L. -I ./include/ -o azterketa azterketa.c -Bdynamic liborokor.so 
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/asiertxu/Escritorio/Sistema_Eragileak/make/eragiketak_make/
+export LD_LIBRARY_PATH
+./azterketa azkerketa.c
+
+f)
+gcc -I ./include/ -c aritmetika.c -o aritmetika.o
+gcc -I ./include/ -c azala.c -o azala.o
+ar rv liborokor.a aritmetika.o azala.o
+ranlib liborokor.a
+gcc -I ./include/ -L. azterketa.c liborokor.a -o azterketa_est -static
+gcc -I ./include/ -L. azterketa.c liborokor.a -o azterketa_est -static
+./azterketa_est azterketa_est.c
+
+g)
+vim makefile
+Hurrengo kodea sartzen dugu:
+azterketa: aritmetika.o azala.o azterketa.o
+        gcc -o azterketa azterketa.o azala.o aritmetika.o -I ./include
+aritmetika.o: aritmetika.c
+        gcc -c aritmetika.c -o aritmetika.o -I ./include
+azala.o: azala.c
+        gcc -c azala.c -o azala.o -I ./include
+azterketa.o: azterketa.c
+        gcc -c azterketa.c -o azterketa.o -I ./include
+clean:
+        rm *o
+ondoren make komandoa exekutatzen dugu terminalean

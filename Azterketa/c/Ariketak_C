@@ -1,0 +1,132 @@
+1-
+stdio.h fitxategia makroak eta komandoak exekutazeko beharrezkoak diren elementuak ditu.
+whereis stdio.h
+/usr/include/stdio.h-n dago.
+bere edukia ikusteko vim /usr/include/stdio.h
+
+2-
+stdio.h-n dago printf-ren informazioa
+man printf eginez printf-ren erazagupena lortzen dugu.
+
+3-
+whereis libc.a
+/usr/lib/x86_64-linux-gnu/libc.so-n dago libc.a liburutegi estatikoa.
+whereis libc.so
+/usr/lib/x86_64-linux-gnu/libc.so-n dago libc.so liburutegi dinamikoa
+
+5-
+
+vim pi.c ->Codigo normal
+gcc -E pi.c -o pi.i ->Aurreprozesagailua
+
+a)
+gcc -S pi.i -o pi.s -> Mihiztatzailea kodea
+
+b)
+gcc -c pi.s -o pi.o -> Objetu kodea
+
+c)
+gcc -o pi pi.o -> Exekutagarria
+
+6-
+vim longFitx.c
+#include<stdio.h>
+#define MAXSTR 100
+int main(){
+	FILE *fd;
+	char fitx[MAXSTR];
+	char c;
+	int kont;
+
+	printf("Sartu fitxategi izena: ");
+	scanf("%s",fitx);
+	
+	fd=fopen(fitx,"r");
+	c=fgetc(fd);
+	while(c!=EOF){
+		kont++;
+		c=fgetc(fd);
+	}
+	fclose(fd);
+	printf("tamaina: %d\n",kont);
+}
+
+gcc -o longFitx longFitx.c
+./longFitx
+
+7-
+vim idatzi.c
+#include<stdio.h>
+#define MAXSTR 100
+int main(){
+	FILE *fd;
+	char fitx[MAXSTR];
+	char c;
+	int kont;
+	int i;
+
+	printf("Sartu fitxategi izena: ");
+	scanf("%s",fitx);
+	
+	fd=fopen(fitx,"w");
+	for(i=65;i<=90;i++){
+		fputc(i,fd);
+	}
+	fputc('\n',fd);
+	for(i=97;i<=122;i++){
+		fputc(i,fd);
+	}
+	fclose(fd);
+}
+gcc -o idatzi idatzi.c
+./idatzi
+
+8-
+a eta b)
+
+touch orokorra.c
+gcc -c orkorra.c -o orokorra.o fPIC
+ld –o liborokorra.so orokorra.o –shared
+gcc -o akopuru akopuru.c -I. -L. -Bdynamic liborokorra.so
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/asiertxu/bin
+export LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+./akopuru
+
+vim akopuru.c
+#include<stdio.h>
+#define MAXSTR 100
+int ffitxkarakkop(char c,FILE *fitx){
+	char e;
+	e=fgetc(fitx);
+	int kont=0;
+	while(e!=EOF){
+		if(c==e){
+			kont++;
+		}
+		e=fgetc(fitx);
+	}
+	fclose(fitx);
+	return kont;
+}
+int main(){
+char nombre[80],c;
+FILE *fp;
+int contador=0;
+printf ("¿De qué fichero deseas conocer el número de aes?");
+scanf("%s",nombre);
+fp=fopen(nombre,"r");
+if (fp==NULL)
+        {
+	printf("No se puede abrir el fichero %s \n",nombre);
+             return -1;
+         }
+else
+        {       contador=ffitxkarakkop('a',fp);
+                fclose(fp);
+                printf("El número de a-s es de %d",contador);
+        }
+return 0;
+}
+gcc -o akopuru akopuru.c
+./akopuru

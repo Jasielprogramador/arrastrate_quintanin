@@ -1,0 +1,3 @@
+Liburutegi estatikoa: Gure programa konpilatzean gure programan "kopiatzen" den liburutegia da, programaren exekutagarria dugunean liburutegia ez du ezertarako balio.
+
+Liburutegi dinamikoa: Gure programa konpilatzean ez da "kopiatzen" liburutegia, exekutagarria izatean, kodigoa zerbait behar duenenan liburutegian bilatuko du

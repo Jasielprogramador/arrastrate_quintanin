@@ -1,0 +1,146 @@
+1.ariketa
+vim ariketa1.c
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+int main( int argc, char *argv[] ){
+int fd;
+if( (fd = open( argv[1], O_RDWR )) == -1 ) {
+perror( "open" );
+exit( -1 );
+}
+printf( "Irekita dagoen fitxategia %d deskribatzailea du\n", fd );
+close( fd );
+return 0;
+}
+gcc ariketa.c -o ariketa
+./ariketa ariketa.c
+
+2.ariketa
+gcc -E ariketa.i -o ariketa.c
+grep -i 'ssize_t' ariketa.i
+
+3.ariketa
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#define STDOUT 1
+#define SIZE 512
+int main( int argc, char *argv[] ){
+int fd, readbytes;
+char buffer[SIZE];
+if (argc != 2) {
+printf ("\n erabili hurrengo deia: %s fitxategiaren izena\n", argv[0]);
+exit (-1);
+}
+if( (fd = open( argv[1], O_RDWR )) == -1 ){
+perror( "open" );
+exit( -1 );
+}
+while( (readbytes = read( fd, buffer, SIZE )) != 0 ){
+/*write( STDOUT, buffer, SIZE ); */
+write( STDOUT, buffer, readbytes);
+}
+close( fd );
+return 0;
+}
+gcc ariketa3.c -o ariketa3
+./ariketa3 ariketa3.c
+
+4.ariketa
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#define STDOUT 1
+#define SIZE 512
+int main( int argc, char *argv[] ){
+int fd, readbytes;
+char buffer[SIZE];
+if (argc != 2) {
+printf ("\n erabili hurrengo deia: %s fitxategiaren izena\n", argv[0]);
+exit (-1);
+}
+if( (fd = open( argv[1], O_RDWR )) == -1 ){
+perror( "open" );
+exit( -1 );
+}
+while( (readbytes = read( fd, buffer, SIZE )) != 0 ){
+/*write( STDOUT, buffer, readbytes); */
+write( STDOUT, buffer, SIZE);
+}
+close( fd );
+return 0;
+}
+gcc ariketa4.c -o ariketa4
+./ariketa4 ariketa4.c
+Kasu honetan programa hau modu honetan uzten badugu memorian geratzen den zaborra ere pantailaratuko da, programa berriz pantailaratuz, hau gerta ezdadin write-aren barruan SIZE jarri beharrean readbytes jarri beharko dugu
+
+5.ariketa
+gcc -E ariketa.i -o ariketa.c
+grep -i 'off_t' ariketa.i
+
+6.ariketa
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#define STDOUT 1
+#define SIZE 512
+int main( int argc, char *argv[] ){
+int fd, readbytes;
+char buffer[SIZE];
+if( (fd = open( argv[1], O_RDWR )) == -1 ) {
+perror( "open" );
+exit( -1 );
+}
+lseek( fd,200, SEEK_SET );
+while( (readbytes = read( fd, buffer, SIZE )) != 0 ) {
+write( STDOUT, buffer, SIZE );
+}
+close(fd);
+return 0;
+}
+gcc ariketa6.c -o ariketa6
+./ariketa6 ariketa6.c
+
+7.ariketa
+suid eta sgid bitak fitxategi edo direktorio zein talde eta erabiltzaile duten jabe gisa adierazten dute
+honekin batera chown erabiliz bit hauen balioa alda dezakegu
+
+8.ariketa
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+int main( int argc, char *argv[] ) {
+struct stat estructura;
+if( ( lstat( argv[1], &estructura ) ) < 0 ) {
+perror( "lstat" );
+exit( -1 );
+}
+printf( "Fitxategiaren propietateak” <%s>\n", argv[1] );
+printf( "i-nodo: %lu\n", estructura.st_ino );
+printf( "modua: %#o\n", estructura.st_mode );
+printf( "loturak: %ld\n", estructura.st_nlink );
+printf( "jabea: %d\n", estructura.st_uid );
+printf( "taldea: %d\n", estructura.st_gid );
+printf( "dispositibo mota: %ld\n", estructura.st_rdev );
+printf( "tamaina totala, byte-tan: %ld\n", estructura.st_size );
+printf( "blokearen gustuko tamaina: %ld\n", estructura.st_blksize );
+printf( "esleitutako bloke kopurua: %ld\n", estructura.st_blocks );
+return 0;
+}
+gcc adibidea.c -o adibidea
+./adibidea adibidea.c
